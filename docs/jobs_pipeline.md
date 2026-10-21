@@ -4,43 +4,43 @@ Encadeamento dos notebooks via Jobs & Pipelines do Databricks.
 
 ## Visão geral
 
-O pipeline Medalhão é executado como um Job com 6 tasks sequenciais:
-00_initial_setup → 01_landing_extraction → 02_landing_to_bronze → 03_bronze_to_silver → 04_silver_to_gold → 05_cleanup
+O pipeline Medalhão é executado como um Job com 5 tasks sequenciais:
+
+```text
+00_preparing_environment → 01_database_to_landing → 02_landing_to_bronze → 03_bronze_to_silver → 04_silver_to_gold
+```
+
+O notebook `CLEAN_WORKSPACE` **não** entra no Job: ele apaga todos os schemas e é executado manualmente quando se quer recomeçar do zero.
 
 ## Pré-requisitos
 
-- Repositório importado no Databricks Repos com caminho `/Repos/<usuario>/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/`
-- Cluster com Delta Lake habilitado
-- Variáveis de ambiente configuradas no `.env` ou no Secret Scope
+- Repositório importado como Git folder no Databricks
+- Compute serverless (padrão do Free Edition, não é necessário configurar cluster)
+- Secret Scope `lakehouse` com as credenciais da fonte (ou parâmetros do Job `db_host`, `db_port`, `db_name`, `db_user`, `db_password`)
 
 ## Passo a passo para criar o Job
 
 1. **Importar repositório**
-   - Databricks > Repos > New > Import from Git
+   - Workspace > Create > Git folder
    - URL do repositório GitHub do trabalho
 
 2. **Ajustar `databricks_jobs.json`**
    - Abra `databricks_jobs.json` na raiz do projeto
-   - Substitua `seu-usuario` pelos caminhos reais do Repos
+   - Substitua `/Repos/seu-usuario/...` pelo caminho real do Git folder
 
-3. **Criar Job via UI**
-   - Workflows > Jobs > New Job
-   - Clique em **Import job JSON**
-   - Cole o conteúdo de `databricks_jobs.json`
-   - Revise os notebook paths e o cluster
+3. **Criar o Job**
+   - Jobs & Pipelines > Create job
+   - Edite como JSON e cole o conteúdo de `databricks_jobs.json`
+   - Revise os caminhos dos notebooks
 
-4. **Configurar parâmetros**
-   - Em cada task, defina `base_parameters` se necessário: catalog, schema, DB_SOURCE
-   - Habilite notificações e retry conforme desejado
-
-5. **Executar**
-   - Clique em Run Now
+4. **Executar**
+   - Clique em Run now
    - Acompanhe o fluxo no painel de runs. Cada task aguarda a conclusão da anterior.
 
 ## Manutenção
 
 - Para alterar a ordem, edite as dependências `depends_on` no JSON
-- Para adicionar Data Quality checks, atualize `03_bronze_to_silver.ipynb`
-- Para evoluir o modelo dimensional, atualize `04_silver_to_gold.ipynb`
+- Para adicionar regras de Data Quality, atualize o dicionário `RULES` em `03_BRONZE_TO_SILVER.ipynb`
+- Para evoluir o modelo dimensional, atualize `04_SILVER_TO_GOLD.ipynb`
 
 Arquivo de definição: `databricks_jobs.json`

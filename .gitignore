@@ -9,6 +9,7 @@ dist/
 env/
 ENV/
 .env
+.pytest_cache/
 
 # Jupyter
 .ipynb_checkpoints
@@ -23,6 +24,9 @@ site/
 
 # OS
 .DS_Store
+
+# Databricks
+.databricks/
 
 # Poetry
 # Keep poetry.lock
