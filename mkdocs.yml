@@ -1,0 +1,42 @@
+site_name: Lakehouse Databricks - Arquitetura Medalhao
+site_description: Documentação do Trabalho Prático de Engenharia de Dados com Databricks e Arquitetura Medalhao
+site_author: Dupla
+repo_name: trabalho-eng-dados-lakehouse_databricks
+docs_dir: docs
+
+theme:
+  name: material
+  language: pt-BR
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+
+nav:
+  - Início: index.md
+  - Pipeline:
+      - Landing para Bronze: landing_to_bronze.md
+      - Bronze para Silver: bronze_to_silver.md
+      - Silver para Gold: silver_to_gold.md
+      - Jobs e Pipeline: jobs_pipeline.md
+  - Conceitos:
+      - Arquitetura Medalhao: arquitetura_medalhao.md
+  - Execução: execucao.md

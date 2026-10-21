@@ -1,0 +1,48 @@
+{
+  "name": "Lakehouse Medallion Pipeline",
+  "description": "Pipeline Medalhão Landing -> Bronze -> Silver -> Gold no Databricks Free Edition",
+  "tasks": [
+    {
+      "task_key": "00_initial_setup",
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/00_initial_setup"
+      }
+    },
+    {
+      "task_key": "01_landing_extraction",
+      "depends_on": [{"task_key": "00_initial_setup"}],
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/01_landing_extraction"
+      }
+    },
+    {
+      "task_key": "02_landing_to_bronze",
+      "depends_on": [{"task_key": "01_landing_extraction"}],
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/02_landing_to_bronze"
+      }
+    },
+    {
+      "task_key": "03_bronze_to_silver",
+      "depends_on": [{"task_key": "02_landing_to_bronze"}],
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/03_bronze_to_silver"
+      }
+    },
+    {
+      "task_key": "04_silver_to_gold",
+      "depends_on": [{"task_key": "03_bronze_to_silver"}],
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/04_silver_to_gold"
+      }
+    },
+    {
+      "task_key": "05_cleanup",
+      "depends_on": [{"task_key": "04_silver_to_gold"}],
+      "notebook_task": {
+        "notebook_path": "/Repos/seu-usuario/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/05_cleanup"
+      }
+    }
+  ],
+  "max_concurrent_runs": 1
+}
