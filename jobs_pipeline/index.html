@@ -781,19 +781,26 @@
 
 <h1 id="jobs-e-pipeline">Jobs e Pipeline<a class="headerlink" href="#jobs-e-pipeline" title="Permanent link">&para;</a></h1>
 <p>Encadeamento dos notebooks via Jobs &amp; Pipelines do Databricks.</p>
+<pre class="mermaid"><code>graph TD
+    A[00_PREPARING_ENVIRONMENT] --&gt; B[01_DATABASE_TO_LANDING]
+    B --&gt; C[02_LANDING_TO_BRONZE]
+    C --&gt; D[03_BRONZE_TO_SILVER]
+    D --&gt; E[04_SILVER_TO_GOLD]</code></pre>
 <h2 id="visao-geral">Visão geral<a class="headerlink" href="#visao-geral" title="Permanent link">&para;</a></h2>
-<p>O pipeline Medalhão é executado como um Job com 6 tasks sequenciais:
-00_initial_setup → 01_landing_extraction → 02_landing_to_bronze → 03_bronze_to_silver → 04_silver_to_gold → 05_cleanup</p>
+<p>O pipeline Medalhão é executado como um Job com 5 tasks sequenciais:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>00_preparing_environment → 01_database_to_landing → 02_landing_to_bronze → 03_bronze_to_silver → 04_silver_to_gold
+</code></pre></div>
+<p>O notebook <code>CLEAN_WORKSPACE</code> <strong>não</strong> entra no Job: ele apaga todos os schemas e é executado manualmente quando se quer recomeçar do zero.</p>
 <h2 id="pre-requisitos">Pré-requisitos<a class="headerlink" href="#pre-requisitos" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Repositório importado no Databricks Repos com caminho <code>/Repos/&lt;usuario&gt;/trabalho-eng-dados-lakehouse_databricks/src/lakehouse_databricks/notebooks/</code></li>
-<li>Cluster com Delta Lake habilitado</li>
-<li>Variáveis de ambiente configuradas no <code>.env</code> ou no Secret Scope</li>
+<li>Repositório importado como Git folder no Databricks</li>
+<li>Compute serverless (padrão do Free Edition, não é necessário configurar cluster)</li>
+<li>Secret Scope <code>lakehouse</code> com as credenciais da fonte (ou parâmetros do Job <code>db_host</code>, <code>db_port</code>, <code>db_name</code>, <code>db_user</code>, <code>db_password</code>)</li>
 </ul>
 <h2 id="passo-a-passo-para-criar-o-job">Passo a passo para criar o Job<a class="headerlink" href="#passo-a-passo-para-criar-o-job" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>Importar repositório</strong></li>
-<li>Databricks &gt; Repos &gt; New &gt; Import from Git</li>
+<li>Workspace &gt; Create &gt; Git folder</li>
 <li>
 <p>URL do repositório GitHub do trabalho</p>
 </li>
@@ -802,35 +809,27 @@
 </li>
 <li>Abra <code>databricks_jobs.json</code> na raiz do projeto</li>
 <li>
-<p>Substitua <code>seu-usuario</code> pelos caminhos reais do Repos</p>
+<p>Substitua <code>/Repos/seu-usuario/...</code> pelo caminho real do Git folder</p>
 </li>
 <li>
-<p><strong>Criar Job via UI</strong></p>
+<p><strong>Criar o Job</strong></p>
 </li>
-<li>Workflows &gt; Jobs &gt; New Job</li>
-<li>Clique em <strong>Import job JSON</strong></li>
-<li>Cole o conteúdo de <code>databricks_jobs.json</code></li>
+<li>Jobs &amp; Pipelines &gt; Create job</li>
+<li>Edite como JSON e cole o conteúdo de <code>databricks_jobs.json</code></li>
 <li>
-<p>Revise os notebook paths e o cluster</p>
-</li>
-<li>
-<p><strong>Configurar parâmetros</strong></p>
-</li>
-<li>Em cada task, defina <code>base_parameters</code> se necessário: catalog, schema, DB_SOURCE</li>
-<li>
-<p>Habilite notificações e retry conforme desejado</p>
+<p>Revise os caminhos dos notebooks</p>
 </li>
 <li>
 <p><strong>Executar</strong></p>
 </li>
-<li>Clique em Run Now</li>
+<li>Clique em Run now</li>
 <li>Acompanhe o fluxo no painel de runs. Cada task aguarda a conclusão da anterior.</li>
 </ol>
 <h2 id="manutencao">Manutenção<a class="headerlink" href="#manutencao" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Para alterar a ordem, edite as dependências <code>depends_on</code> no JSON</li>
-<li>Para adicionar Data Quality checks, atualize <code>03_bronze_to_silver.ipynb</code></li>
-<li>Para evoluir o modelo dimensional, atualize <code>04_silver_to_gold.ipynb</code></li>
+<li>Para adicionar regras de Data Quality, atualize o dicionário <code>RULES</code> em <code>03_BRONZE_TO_SILVER.ipynb</code></li>
+<li>Para evoluir o modelo dimensional, atualize <code>04_SILVER_TO_GOLD.ipynb</code></li>
 </ul>
 <p>Arquivo de definição: <code>databricks_jobs.json</code></p>
 

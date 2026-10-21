@@ -372,10 +372,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#fluxo-visual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxo visual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#camadas" class="md-nav__link">
     <span class="md-ellipsis">
       
         Camadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabelas-da-fonte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabelas da fonte
       
     </span>
   </a>
@@ -395,6 +417,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Estrutura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comecar-agora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Começar agora
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -741,10 +780,32 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#fluxo-visual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxo visual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#camadas" class="md-nav__link">
     <span class="md-ellipsis">
       
         Camadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabelas-da-fonte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tabelas da fonte
       
     </span>
   </a>
@@ -764,6 +825,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Estrutura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comecar-agora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Começar agora
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -786,23 +864,75 @@
 
 <h1 id="lakehouse-com-databricks-e-arquitetura-medalhao">Lakehouse com Databricks e Arquitetura Medalhao<a class="headerlink" href="#lakehouse-com-databricks-e-arquitetura-medalhao" title="Permanent link">&para;</a></h1>
 <h2 id="visao-geral">Visão geral<a class="headerlink" href="#visao-geral" title="Permanent link">&para;</a></h2>
-<p>Este projeto implementa um pipeline de dados utilizando a arquitetura Medalhao no Databricks Free Edition.</p>
+<p>Este projeto implementa um pipeline de dados utilizando a arquitetura Medalhao no Databricks Free Edition com orquestração por Jobs &amp; Pipelines.</p>
+<div class="admonition info">
+<p class="admonition-title">Objetivo do trabalho</p>
+<p>Implementar Landing → Bronze → Silver → Gold com Databricks, Delta Lake e modelo dimensional Kimball, com Data Quality e orquestração automatizada.</p>
+</div>
 <h3 id="fluxo-visual">Fluxo visual<a class="headerlink" href="#fluxo-visual" title="Permanent link">&para;</a></h3>
+<h3 id="fluxo-visual_1">Fluxo visual<a class="headerlink" href="#fluxo-visual_1" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart LR
-    Fonte[(Fonte PostgreSQL)] --&gt; Landing[(LANDING CSV/JSON)]
+    Fonte[(Fonte PostgreSQL)] --&gt; Landing[(LANDING CSV)]
     Landing --&gt; Bronze[(BRONZE Delta)]
     Bronze --&gt; Silver[(SILVER Delta + DQ)]
     Silver --&gt; Gold[(GOLD Dimensional)]
     Gold --&gt; BI[Relatórios/BI]</code></pre>
 <h3 id="camadas">Camadas<a class="headerlink" href="#camadas" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Landing</strong>: dados brutos extraídos da fonte em CSV/JSON</li>
-<li><strong>Bronze</strong>: dados em Delta Lake sem transformação</li>
-<li><strong>Silver</strong>: dados limpos com Data Quality</li>
+<li><strong>Landing</strong>: dados brutos extraídos da fonte em CSV</li>
+<li><strong>Bronze</strong>: dados em Delta Lake sem transformação de conteúdo</li>
+<li><strong>Silver</strong>: dados limpos, tipados e com Data Quality</li>
 <li><strong>Gold</strong>: tabelas dimensionais Kimball</li>
 </ul>
+<h3 id="tabelas-da-fonte">Tabelas da fonte<a class="headerlink" href="#tabelas-da-fonte" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tabela na fonte</th>
+<th>Arquivo na landing</th>
+<th>Tabela bronze / silver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>games</code></td>
+<td><code>games.csv</code></td>
+<td><code>metacritic_games</code></td>
+</tr>
+<tr>
+<td><code>steam_metrics</code></td>
+<td><code>steam_metrics.csv</code></td>
+<td><code>steam_metrics</code></td>
+</tr>
+<tr>
+<td><code>regional_sales</code></td>
+<td><code>regional_sales.csv</code></td>
+<td><code>regional_sales</code></td>
+</tr>
+<tr>
+<td><code>how_long_to_beat</code></td>
+<td><code>how_long_to_beat.csv</code></td>
+<td><code>how_long_to_beat</code></td>
+</tr>
+<tr>
+<td><code>walkthrough_links</code></td>
+<td><code>walkthrough_links.csv</code></td>
+<td><code>walkthrough_links</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="estrutura">Estrutura<a class="headerlink" href="#estrutura" title="Permanent link">&para;</a></h2>
 <p>Consulte a documentação nas seções ao lado.</p>
+<h3 id="comecar-agora">Começar agora<a class="headerlink" href="#comecar-agora" title="Permanent link">&para;</a></h3>
+<ol>
+<li><a href="arquitetura_medalhao/">Arquitetura Medalhao</a> – entenda as camadas</li>
+<li><a href="execucao/">Execução</a> – ordem de execução e pré-requisitos</li>
+<li><a href="jobs_pipeline/">Jobs e Pipeline</a> – como criar o Job no Databricks</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Dica</p>
+<p>O repositório já traz <code>databricks_jobs.json</code>. Após importar como Git folder, basta importar o JSON e ajustar o caminho do Repos.</p>
+</div>
 
 
 

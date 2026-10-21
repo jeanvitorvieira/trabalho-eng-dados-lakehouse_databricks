@@ -384,6 +384,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Landing para Bronze
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -400,6 +418,58 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-fonte-landing-01_database_to_landing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Fonte -&gt; Landing (01_DATABASE_TO_LANDING)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-landing-bronze-02_landing_to_bronze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Landing -&gt; Bronze (02_LANDING_TO_BRONZE)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -631,6 +701,47 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-fonte-landing-01_database_to_landing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Fonte -&gt; Landing (01_DATABASE_TO_LANDING)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-landing-bronze-02_landing_to_bronze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Landing -&gt; Bronze (02_LANDING_TO_BRONZE)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -648,6 +759,50 @@
 
 <h1 id="landing-para-bronze">Landing para Bronze<a class="headerlink" href="#landing-para-bronze" title="Permanent link">&para;</a></h1>
 <p>Descrição da etapa de ingestão dos dados de Landing para Bronze em Delta Lake.</p>
+<pre class="mermaid"><code>flowchart LR
+    DB[(PostgreSQL)] --&gt;|JDBC| CSV[(Volume Landing CSV)]
+    CSV --&gt;|leitura Spark| DeltaBronze[(Bronze Delta MANAGED)]</code></pre>
+<h2 id="1-fonte-landing-01_database_to_landing">1. Fonte -&gt; Landing (<code>01_DATABASE_TO_LANDING</code>)<a class="headerlink" href="#1-fonte-landing-01_database_to_landing" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Conecta no PostgreSQL via JDBC (<code>sslmode=require</code>). As credenciais vêm do Secret Scope <code>lakehouse</code> ou de parâmetros do Job.</li>
+<li>Lê cada tabela de origem e grava um CSV com cabeçalho em <code>/Volumes/workspace/landing/dados/&lt;tabela&gt;.csv</code>.</li>
+<li>O Spark grava uma pasta <code>temp_&lt;tabela&gt;</code>; o notebook copia o arquivo <code>part-*</code> para o nome final e apaga a pasta temporária.</li>
+</ul>
+<h2 id="2-landing-bronze-02_landing_to_bronze">2. Landing -&gt; Bronze (<code>02_LANDING_TO_BRONZE</code>)<a class="headerlink" href="#2-landing-bronze-02_landing_to_bronze" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Lê cada CSV com <code>header=true</code> e <code>inferSchema=true</code>.</li>
+<li>Adiciona duas colunas de metadado:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>datetime_bronze</code></td>
+<td>data/hora do processamento</td>
+</tr>
+<tr>
+<td><code>filename</code></td>
+<td>nome do arquivo de origem</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Grava tabelas Delta MANAGED em <code>workspace.bronze</code> com <code>mode("overwrite")</code> e <code>overwriteSchema=true</code>.</li>
+</ul>
+<h2 id="validacao">Validação<a class="headerlink" href="#validacao" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="n">bronze</span><span class="p">;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">DESCRIBE</span><span class="w"> </span><span class="n">DETAIL</span><span class="w"> </span><span class="n">bronze</span><span class="p">.</span><span class="n">metacritic_games</span><span class="p">;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">DESCRIBE</span><span class="w"> </span><span class="n">EXTENDED</span><span class="w"> </span><span class="n">bronze</span><span class="p">.</span><span class="n">metacritic_games</span><span class="p">;</span><span class="w">  </span><span class="c1">-- Type = MANAGED</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Credenciais</p>
+<p>No Databricks Free Edition use Secret Scope <code>lakehouse</code> para <code>db_host</code>, <code>db_port</code>, <code>db_name</code>, <code>db_user</code>, <code>db_password</code>. Nunca commit credenciais.</p>
+</div>
 
 
 

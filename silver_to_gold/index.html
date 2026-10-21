@@ -440,6 +440,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silver para Gold
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -456,6 +474,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#esquema-estrela" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Esquema estrela
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fato
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dimensoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimensões
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pendencias-do-modelo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pendências do modelo
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -631,6 +723,69 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#esquema-estrela" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Esquema estrela
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fato
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dimensoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimensões
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pendencias-do-modelo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pendências do modelo
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -647,7 +802,81 @@
 
 
 <h1 id="silver-para-gold">Silver para Gold<a class="headerlink" href="#silver-para-gold" title="Permanent link">&para;</a></h1>
-<p>Modelagem dimensional Ralph Kimball.</p>
+<p>Modelagem dimensional Ralph Kimball (<code>04_SILVER_TO_GOLD</code>).</p>
+<div class="admonition info">
+<p class="admonition-title">Modelo</p>
+<p>Esquema estrela com fato <code>fact_game_review</code> e dimensões de jogo, plataforma, gênero, desenvolvedor, publisher e data.</p>
+</div>
+<h2 id="esquema-estrela">Esquema estrela<a class="headerlink" href="#esquema-estrela" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>erDiagram
+    FACT_GAME_REVIEW }o--|| DIM_GAME : GAME_SK
+    FACT_GAME_REVIEW }o--|| DIM_PLATFORM : PLATFORM_SK
+    FACT_GAME_REVIEW }o--|| DIM_GENRE : GENRE_SK
+    FACT_GAME_REVIEW }o--|| DIM_DEVELOPER : DEVELOPER_SK
+    FACT_GAME_REVIEW }o--|| DIM_PUBLISHER : PUBLISHER_SK
+    FACT_GAME_REVIEW }o--|| DIM_DATE : RELEASE_DATE_SK
+    FACT_GAME_REVIEW {
+        int GAME_SK
+        int PLATFORM_SK
+        int GENRE_SK
+        int DEVELOPER_SK
+        int PUBLISHER_SK
+        int RELEASE_DATE_SK
+        int METASCORE
+        double USER_SCORE
+    }</code></pre>
+<h2 id="fato">Fato<a class="headerlink" href="#fato" title="Permanent link">&para;</a></h2>
+<p><strong><code>fact_game_review</code></strong>: grão de uma linha por jogo/plataforma do Metacritic. Medidas: <code>METASCORE</code> (crítica, 0 a 100) e <code>USER_SCORE</code> (usuários, 0 a 10).</p>
+<h2 id="dimensoes">Dimensões<a class="headerlink" href="#dimensoes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dimensão</th>
+<th>Chave substituta</th>
+<th>Atributos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dim_game</code></td>
+<td><code>GAME_SK</code></td>
+<td><code>GAME_ID</code>, <code>GAME_NAME</code></td>
+</tr>
+<tr>
+<td><code>dim_platform</code></td>
+<td><code>PLATFORM_SK</code></td>
+<td><code>PLATFORM_NAME</code></td>
+</tr>
+<tr>
+<td><code>dim_genre</code></td>
+<td><code>GENRE_SK</code></td>
+<td><code>GENRE_NAME</code></td>
+</tr>
+<tr>
+<td><code>dim_developer</code></td>
+<td><code>DEVELOPER_SK</code></td>
+<td><code>DEVELOPER_NAME</code></td>
+</tr>
+<tr>
+<td><code>dim_publisher</code></td>
+<td><code>PUBLISHER_SK</code></td>
+<td><code>PUBLISHER_NAME</code></td>
+</tr>
+<tr>
+<td><code>dim_date</code></td>
+<td><code>DATE_SK</code> (yyyyMMdd)</td>
+<td><code>DATE</code>, <code>YEAR</code>, <code>QUARTER</code>, <code>MONTH</code>, <code>MONTH_NAME</code>, <code>DAY</code>, <code>DAY_OF_WEEK</code>, <code>DAY_NAME</code>, <code>IS_WEEKEND</code></td>
+</tr>
+</tbody>
+</table>
+<p>Toda dimensão tem o membro <code>-1 = NÃO INFORMADO</code>, usado quando a chave estrangeira da fato é nula. Todas as tabelas têm a coluna de auditoria <code>FILEDATE_GOLD</code>.</p>
+<h2 id="verificacoes">Verificações<a class="headerlink" href="#verificacoes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A fato tem o mesmo número de linhas da silver (<code>assert</code> no notebook).</li>
+<li>Nenhuma FK fica sem correspondência, pois valores nulos apontam para o membro <code>-1</code>.</li>
+</ul>
+<h2 id="pendencias-do-modelo">Pendências do modelo<a class="headerlink" href="#pendencias-do-modelo" title="Permanent link">&para;</a></h2>
+<p>As tabelas <code>steam_metrics</code>, <code>regional_sales</code>, <code>how_long_to_beat</code> e <code>walkthrough_links</code> ainda precisam ser incorporadas ao modelo (novas fatos ou dimensões ligadas ao jogo).</p>
 
 
 

@@ -583,6 +583,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execução
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -599,6 +617,80 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ordem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#antes-da-primeira-execucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes da primeira execução
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execucao-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execução manual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execucao-via-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execução via Job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reexecucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reexecução
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -624,6 +716,69 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ordem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#antes-da-primeira-execucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes da primeira execução
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execucao-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execução manual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execucao-via-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execução via Job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reexecucao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reexecução
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -641,6 +796,62 @@
 
 <h1 id="execucao">Execução<a class="headerlink" href="#execucao" title="Permanent link">&para;</a></h1>
 <p>Instruções de execução dos notebooks na ordem correta.</p>
+<pre class="mermaid"><code>flowchart LR
+    CLEAN_WORKSPACE --&gt; 00_PREPARING_ENVIRONMENT --&gt; 01_DATABASE_TO_LANDING --&gt; 02_LANDING_TO_BRONZE --&gt; 03_BRONZE_TO_SILVER --&gt; 04_SILVER_TO_GOLD</code></pre>
+<h2 id="ordem">Ordem<a class="headerlink" href="#ordem" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Notebook</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>00_PREPARING_ENVIRONMENT</code></td>
+<td>cria schemas e volume</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>01_DATABASE_TO_LANDING</code></td>
+<td>extrai do PostgreSQL para CSV</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>02_LANDING_TO_BRONZE</code></td>
+<td>CSV para Delta (bronze)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>03_BRONZE_TO_SILVER</code></td>
+<td>renome + Data Quality (silver)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>04_SILVER_TO_GOLD</code></td>
+<td>modelo dimensional (gold)</td>
+</tr>
+<tr>
+<td>-</td>
+<td><code>CLEAN_WORKSPACE</code></td>
+<td>limpeza total, <strong>manual</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="antes-da-primeira-execucao">Antes da primeira execução<a class="headerlink" href="#antes-da-primeira-execucao" title="Permanent link">&para;</a></h2>
+<p>Crie o Secret Scope <code>lakehouse</code> com as credenciais da fonte (veja o README) ou informe os valores como parâmetros do Job.</p>
+<h2 id="execucao-manual">Execução manual<a class="headerlink" href="#execucao-manual" title="Permanent link">&para;</a></h2>
+<p>Abra cada notebook em ordem no Databricks e use <strong>Run all</strong>.</p>
+<h2 id="execucao-via-job">Execução via Job<a class="headerlink" href="#execucao-via-job" title="Permanent link">&para;</a></h2>
+<p>Use o <code>databricks_jobs.json</code> conforme <code>jobs_pipeline.md</code>.</p>
+<h2 id="reexecucao">Reexecução<a class="headerlink" href="#reexecucao" title="Permanent link">&para;</a></h2>
+<p>Os notebooks gravam com <code>overwrite</code> + <code>overwriteSchema</code>, então podem ser executados de novo sem limpar o ambiente.</p>
+<div class="admonition caution">
+<p class="admonition-title">CLEAN_WORKSPACE</p>
+<p><code>CLEAN_WORKSPACE</code> apaga schemas e volume. Execute manualmente somente quando quiser recomeçar do zero.</p>
+</div>
 
 
 

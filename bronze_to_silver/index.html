@@ -412,6 +412,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bronze para Silver
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -428,6 +446,58 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#regras-aplicadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regras aplicadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relatorio-de-qualidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relatório de qualidade
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adicionando-regras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adicionando regras
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -631,6 +701,47 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#regras-aplicadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regras aplicadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relatorio-de-qualidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relatório de qualidade
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adicionando-regras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adicionando regras
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -647,7 +758,65 @@
 
 
 <h1 id="bronze-para-silver">Bronze para Silver<a class="headerlink" href="#bronze-para-silver" title="Permanent link">&para;</a></h1>
-<p>Aplicação de Data Quality e transformações.</p>
+<p>Aplicação de Data Quality e transformações (<code>03_BRONZE_TO_SILVER</code>).</p>
+<div class="admonition success">
+<p class="admonition-title">Objetivo</p>
+<p>Transformar dados brutos em dados prontos para análise: padronizar nomes, corrigir tipos, remover duplicados e aplicar regras de domínio.</p>
+</div>
+<h2 id="regras-aplicadas">Regras aplicadas<a class="headerlink" href="#regras-aplicadas" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Regra</th>
+<th>Detalhe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nomes de colunas</td>
+<td>MAIÚSCULAS, snake_case, sem caracteres especiais. Prefixos regionais <code>NA_</code>, <code>EU_</code>, <code>JP_</code>, <code>OTHER_</code> viram <code>NORTH_AMERICA_</code>, <code>EUROPE_</code>, <code>JAPAN_</code>, <code>OTHER_REGIONAL_</code> (só no início do nome)</td>
+</tr>
+<tr>
+<td>Colunas técnicas</td>
+<td><code>DATETIME_BRONZE</code> e <code>FILENAME</code> são removidas</td>
+</tr>
+<tr>
+<td>Texto</td>
+<td><code>trim</code>; vazio, <code>tbd</code>, <code>n/a</code>, <code>null</code>, <code>none</code>, <code>nan</code> viram <code>NULL</code></td>
+</tr>
+<tr>
+<td>Listas em texto</td>
+<td><code>['Humble Games']</code> vira <code>Humble Games</code> (coluna <code>PUBLISHER</code> de <code>metacritic_games</code>)</td>
+</tr>
+<tr>
+<td>Tipagem</td>
+<td>colunas string em que todos os valores são inteiros, decimais ou datas <code>yyyy-MM-dd</code> são convertidas com <code>try_cast</code></td>
+</tr>
+<tr>
+<td>Faixas válidas</td>
+<td><code>METASCORE</code> 0 a 100 e <code>USER_SCORE</code> 0 a 10; fora disso vira <code>NULL</code></td>
+</tr>
+<tr>
+<td>Chaves</td>
+<td>linhas sem <code>ID</code> ou <code>NAME</code> são descartadas</td>
+</tr>
+<tr>
+<td>Duplicados</td>
+<td>removidos por <code>ID</code> (<code>metacritic_games</code>) ou pela linha inteira (demais tabelas)</td>
+</tr>
+<tr>
+<td>Auditoria</td>
+<td><code>FILENAME_BRONZE</code> (tabela de origem) e <code>FILEDATE_SILVER</code> (data/hora do processamento)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>O compute serverless roda com ANSI mode ligado: um <code>CAST</code> inválido gera erro. Por isso a conversão de tipos usa <code>try_cast</code>, que devolve <code>NULL</code> em vez de derrubar o job.</p>
+</blockquote>
+<h2 id="relatorio-de-qualidade">Relatório de qualidade<a class="headerlink" href="#relatorio-de-qualidade" title="Permanent link">&para;</a></h2>
+<p>Para cada tabela o notebook imprime <code>linhas_bronze</code>, <code>linhas_sem_chave_removidas</code>, <code>duplicadas_removidas</code> e <code>linhas_silver</code>.</p>
+<h2 id="adicionando-regras">Adicionando regras<a class="headerlink" href="#adicionando-regras" title="Permanent link">&para;</a></h2>
+<p>As regras específicas ficam no dicionário <code>RULES</code> do notebook (<code>keys</code>, <code>not_null</code>, <code>ranges</code>, <code>list_cols</code>). Para as demais tabelas basta preencher o dicionário correspondente.</p>
 
 
 

@@ -555,6 +555,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura Medalhao
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -571,6 +589,47 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-usar-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que usar camadas?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delta Lake
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -631,6 +690,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-usar-camadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que usar camadas?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delta Lake
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -647,7 +736,66 @@
 
 
 <h1 id="arquitetura-medalhao">Arquitetura Medalhao<a class="headerlink" href="#arquitetura-medalhao" title="Permanent link">&para;</a></h1>
-<p>Explicação da arquitetura Medalhao.</p>
+<p>A arquitetura Medalhão organiza o lakehouse em camadas, cada uma com um nível maior de qualidade e de estruturação dos dados.</p>
+<pre class="mermaid"><code>flowchart TB
+    Fonte[(PostgreSQL / Supabase)] --&gt; Landing[(Landing\nCSV no Volume)]
+    Landing --&gt; Bronze[(Bronze\nDelta raw)]
+    Bronze --&gt; Silver[(Silver\nDelta limpo + DQ)]
+    Silver --&gt; Gold[(Gold\nDelta dimensional)]
+    Gold --&gt; BI[(BI / Relatórios)]</code></pre>
+<table>
+<thead>
+<tr>
+<th>Camada</th>
+<th>Schema</th>
+<th>Formato</th>
+<th>Conteúdo</th>
+<th>Quem consome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Landing</td>
+<td><code>workspace.landing</code> (volume <code>dados</code>)</td>
+<td>CSV</td>
+<td>Cópia fiel da fonte</td>
+<td>Engenharia de dados</td>
+</tr>
+<tr>
+<td>Bronze</td>
+<td><code>workspace.bronze</code></td>
+<td>Delta</td>
+<td>Dados brutos + metadados de ingestão</td>
+<td>Engenharia de dados</td>
+</tr>
+<tr>
+<td>Silver</td>
+<td><code>workspace.silver</code></td>
+<td>Delta</td>
+<td>Dados limpos, tipados e deduplicados</td>
+<td>Analistas, cientistas de dados</td>
+</tr>
+<tr>
+<td>Gold</td>
+<td><code>workspace.gold</code></td>
+<td>Delta</td>
+<td>Modelo dimensional (fatos e dimensões)</td>
+<td>BI, relatórios</td>
+</tr>
+</tbody>
+</table>
+<h2 id="por-que-usar-camadas">Por que usar camadas?<a class="headerlink" href="#por-que-usar-camadas" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Rastreabilidade:</strong> cada etapa guarda de onde o dado veio (<code>filename</code>, <code>FILENAME_BRONZE</code>) e quando foi processado (<code>datetime_bronze</code>, <code>FILEDATE_SILVER</code>, <code>FILEDATE_GOLD</code>).</li>
+<li><strong>Reprocessamento:</strong> se uma regra de qualidade muda, basta refazer Bronze -&gt; Silver sem ir de novo à fonte.</li>
+<li><strong>Separação de responsabilidades:</strong> ingestão, limpeza e modelagem de negócio evoluem de forma independente.</li>
+</ul>
+<h2 id="delta-lake">Delta Lake<a class="headerlink" href="#delta-lake" title="Permanent link">&para;</a></h2>
+<p>Todas as tabelas Bronze, Silver e Gold são <strong>Delta MANAGED</strong>: o Unity Catalog gerencia o armazenamento, e o Delta fornece transações ACID, histórico de versões e evolução de schema.</p>
+<div class="admonition note">
+<p class="admonition-title">Rastreabilidade</p>
+<p>Cada camada adiciona metadados: <code>filename</code> / <code>FILENAME_BRONZE</code> e <code>datetime_bronze</code> / <code>FILEDATE_SILVER</code> / <code>FILEDATE_GOLD</code>. Isso permite auditoria completa da linha.</p>
+</div>
 
 
 
