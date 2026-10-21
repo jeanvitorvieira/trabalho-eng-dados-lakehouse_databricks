@@ -19,13 +19,21 @@ O pipeline é organizado em quatro camadas:
 
 ## Documentação
 
-A documentação técnica fica em `docs/` (MkDocs Material). Para visualizar localmente:
+A documentação técnica fica em `docs/` (MkDocs Material). Acesso online:
+
+**[📚 Documentação](https://jeanvitorvieira.github.io/trabalho-eng-dados-lakehouse_databricks/)**
+
+Para visualizar localmente:
 
 ```bash
 poetry run mkdocs serve
 ```
 
-A publicação no GitHub Pages ainda precisa ser configurada (`poetry run mkdocs gh-deploy`).
+Publicação no GitHub Pages com:
+
+```bash
+poetry run mkdocs gh-deploy
+```
 
 ## Pré-requisitos
 
