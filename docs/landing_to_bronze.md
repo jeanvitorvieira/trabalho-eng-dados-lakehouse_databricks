@@ -2,6 +2,12 @@
 
 Descrição da etapa de ingestão dos dados de Landing para Bronze em Delta Lake.
 
+```mermaid
+flowchart LR
+    DB[(PostgreSQL)] -->|JDBC| CSV[(Volume Landing CSV)]
+    CSV -->|leitura Spark| DeltaBronze[(Bronze Delta MANAGED)]
+```
+
 ## 1. Fonte -> Landing (`01_DATABASE_TO_LANDING`)
 
 - Conecta no PostgreSQL via JDBC (`sslmode=require`). As credenciais vêm do Secret Scope `lakehouse` ou de parâmetros do Job.
@@ -27,3 +33,6 @@ SHOW TABLES IN bronze;
 DESCRIBE DETAIL bronze.metacritic_games;
 DESCRIBE EXTENDED bronze.metacritic_games;  -- Type = MANAGED
 ```
+
+!!! warning "Credenciais"
+    No Databricks Free Edition use Secret Scope `lakehouse` para `db_host`, `db_port`, `db_name`, `db_user`, `db_password`. Nunca commit credenciais.

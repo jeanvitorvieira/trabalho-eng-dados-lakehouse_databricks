@@ -2,6 +2,11 @@
 
 Instruções de execução dos notebooks na ordem correta.
 
+```mermaid
+flowchart LR
+    CLEAN_WORKSPACE --> 00_PREPARING_ENVIRONMENT --> 01_DATABASE_TO_LANDING --> 02_LANDING_TO_BRONZE --> 03_BRONZE_TO_SILVER --> 04_SILVER_TO_GOLD
+```
+
 ## Ordem
 
 | # | Notebook | O que faz |
@@ -28,3 +33,6 @@ Use o `databricks_jobs.json` conforme `jobs_pipeline.md`.
 ## Reexecução
 
 Os notebooks gravam com `overwrite` + `overwriteSchema`, então podem ser executados de novo sem limpar o ambiente.
+
+!!! caution "CLEAN_WORKSPACE"
+    `CLEAN_WORKSPACE` apaga schemas e volume. Execute manualmente somente quando quiser recomeçar do zero.

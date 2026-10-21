@@ -2,7 +2,12 @@
 
 ## Visão geral
 
-Este projeto implementa um pipeline de dados utilizando a arquitetura Medalhao no Databricks Free Edition.
+Este projeto implementa um pipeline de dados utilizando a arquitetura Medalhao no Databricks Free Edition com orquestração por Jobs & Pipelines.
+
+!!! info "Objetivo do trabalho"
+    Implementar Landing → Bronze → Silver → Gold com Databricks, Delta Lake e modelo dimensional Kimball, com Data Quality e orquestração automatizada.
+
+### Fluxo visual
 
 ### Fluxo visual
 
@@ -35,3 +40,12 @@ flowchart LR
 ## Estrutura
 
 Consulte a documentação nas seções ao lado.
+
+### Começar agora
+
+1. [Arquitetura Medalhao](arquitetura_medalhao.md) – entenda as camadas
+2. [Execução](execucao.md) – ordem de execução e pré-requisitos
+3. [Jobs e Pipeline](jobs_pipeline.md) – como criar o Job no Databricks
+
+!!! tip "Dica"
+    O repositório já traz `databricks_jobs.json`. Após importar como Git folder, basta importar o JSON e ajustar o caminho do Repos.

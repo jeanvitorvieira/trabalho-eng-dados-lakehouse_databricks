@@ -2,6 +2,9 @@
 
 Modelagem dimensional Ralph Kimball (`04_SILVER_TO_GOLD`).
 
+!!! info "Modelo"
+    Esquema estrela com fato `fact_game_review` e dimensões de jogo, plataforma, gênero, desenvolvedor, publisher e data.
+
 ## Esquema estrela
 
 ```mermaid

@@ -2,6 +2,14 @@
 
 Encadeamento dos notebooks via Jobs & Pipelines do Databricks.
 
+```mermaid
+graph TD
+    A[00_PREPARING_ENVIRONMENT] --> B[01_DATABASE_TO_LANDING]
+    B --> C[02_LANDING_TO_BRONZE]
+    C --> D[03_BRONZE_TO_SILVER]
+    D --> E[04_SILVER_TO_GOLD]
+```
+
 ## Visão geral
 
 O pipeline Medalhão é executado como um Job com 5 tasks sequenciais:

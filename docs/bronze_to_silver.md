@@ -2,6 +2,9 @@
 
 Aplicação de Data Quality e transformações (`03_BRONZE_TO_SILVER`).
 
+!!! success "Objetivo"
+    Transformar dados brutos em dados prontos para análise: padronizar nomes, corrigir tipos, remover duplicados e aplicar regras de domínio.
+
 ## Regras aplicadas
 
 | Regra | Detalhe |
